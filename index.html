@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Biology Video Playlist</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --accent: #22c55e;
+      --accent-dark: #16a34a;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(to right, #0f172a, #1e293b);
+      padding: 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: var(--accent);
+      margin: 0;
+    }
+
+    #container {
+      display: flex;
+      flex: 1;
+    }
+
+    #playlist {
+      width: 28%;
+      max-width: 320px;
+      background: var(--surface);
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      padding: 1rem 0;
+    }
+
+    #playlist div {
+      padding: 1rem 1.2rem;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+    }
+
+    #playlist div:hover {
+      background: #334155;
+      color: var(--text);
+      padding-left: 1.4rem;
+    }
+
+    #playlist .active {
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+      border-left: 4px solid var(--accent-dark);
+    }
+
+    #player-container {
+      flex: 1;
+      position: relative;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    video {
+      width: 100%;
+      max-width: 1000px;
+      height: auto;
+      max-height: 85vh;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      background: #000;
+    }
+
+    #fullscreen-btn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      background: rgba(30, 41, 59, 0.7);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.4rem;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    #fullscreen-btn:hover {
+      opacity: 1;
+      background: rgba(34, 197, 94, 0.8);
+      transform: scale(1.1);
+    }
+
+    #fullscreen-btn.fullscreen-active::before {
+      content: "⤢";
+    }
+
+    #fullscreen-btn:not(.fullscreen-active)::before {
+      content: "⛶";
+    }
+
+    footer {
+      background: var(--surface);
+      color: var(--text-muted);
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      #container {
+        flex-direction: column;
+      }
+      #playlist {
+        width: 100%;
+        max-width: none;
+        max-height: 40vh;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      #player-container {
+        padding: 1rem;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+      #fullscreen-btn {
+        bottom: 15px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+      }
+    }
+
+    video:not([src])::before {
+      content: "Loading video...";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 1.2rem;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Biology Video Playlist</h1>
+</header>
+
+<div id="container">
+  <div id="playlist"></div>
+
+  <div id="player-container">
+    <video id="player" controls autoplay></video>
+    <button id="fullscreen-btn" title="Toggle Fullscreen"></button>
+  </div>
+</div>
+
+<footer>
+  © 2026 made by <a href="https://cytra.vercel.app" target="_blank">Cytra</a>
+</footer>
+
+<script>
+const videos = [
+  "https://dl.dropboxusercontent.com/scl/fi/n4qdhlgfic4foqnu1r436/Genetics.mp4",
+  "https://dl.dropboxusercontent.com/scl/fi/09cuf7bdomv3vt1ril2h0/Genetics-heredity.mp4",
+  "https://dl.dropboxusercontent.com/scl/fi/kv5sxki9s6mhqpb6qtg04/Reception-response-and-coordination.mp4",
+  "https://dl.dropboxusercontent.com/scl/fi/aaklvya8fblyzj9z2fcm9/Evolution.mp4",
+  "https://dl.dropboxusercontent.com/scl/fi/frgm3phmgqdea5dri9e75/Support-and-movement.mp4"
+];
+
+const titles = [
+  "Genetics",
+  "Genetics & Heredity",
+  "Reception, Response & Coordination",
+  "Evolution",
+  "Support & Movement"
+];
+
+const playlistDiv = document.getElementById("playlist");
+const player = document.getElementById("player");
+const fullscreenBtn = document.getElementById("fullscreen-btn");
+let currentIndex = 0;
+
+// Build playlist items
+videos.forEach((link, index) => {
+  const item = document.createElement("div");
+  item.textContent = titles[index];
+  item.addEventListener("click", () => playVideo(index));
+  playlistDiv.appendChild(item);
+});
+
+function highlightActive() {
+  [...playlistDiv.children].forEach((item, i) => {
+    item.classList.toggle("active", i === currentIndex);
+  });
+}
+
+function playVideo(index) {
+  currentIndex = index;
+  player.src = videos[index];
+  player.play().catch(() => console.log("Autoplay blocked by browser"));
+  highlightActive();
+}
+
+player.addEventListener("ended", () => {
+  if (currentIndex < videos.length - 1) {
+    playVideo(currentIndex + 1);
+  }
+});
+
+// Fullscreen logic
+fullscreenBtn.addEventListener("click", () => {
+  const container = document.getElementById("player-container");
+  if (!document.fullscreenElement) {
+    if (container.requestFullscreen) container.requestFullscreen();
+    else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+    else if (container.msRequestFullscreen) container.msRequestFullscreen();
+  } else {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    else if (document.msExitFullscreen) document.msExitFullscreen();
+  }
+});
+
+document.addEventListener("fullscreenchange", () => {
+  const isFullscreen = !!document.fullscreenElement;
+  fullscreenBtn.classList.toggle("fullscreen-active", isFullscreen);
+  fullscreenBtn.title = isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen";
+});
+
+// Start playing first video
+playVideo(0);
+</script>
+
+</body>
+</html>
